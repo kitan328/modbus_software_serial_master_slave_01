@@ -19,7 +19,7 @@ Modbus slave(104, mySerial); // this is slave @1 and RS-232 or USB-FTDI
 
 void setup() {
   // input pin
-  pinMode(SWITCH_PIN, OUTPUT);
+  pinMode(SWITCH_PIN, INPUT);
   
   // for debug
   Serial.begin(9600);

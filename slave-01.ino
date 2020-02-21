@@ -1,14 +1,7 @@
-/**
- *  Modbus slave example 1:
- *  The purpose of this example is to link a data array
- *  from the Arduino to an external device.
- *
- *  Recommended Modbus Master: QModbus
- *  http://qmodbus.sourceforge.net/
- */
-
 #include <ModbusRtu.h>
 #include <SoftwareSerial.h>
+
+#define SWITCH_PIN 4
 
 // data array for modbus network sharing
 uint16_t au16data[16] = {
@@ -22,14 +15,33 @@ SoftwareSerial mySerial(3, 5);
  *  u8txenpin : 0 for RS-232 and USB-FTDI 
  *               or any pin number > 1 for RS-485
  */
-Modbus slave(104,mySerial); // this is slave @1 and RS-232 or USB-FTDI
+Modbus slave(104, mySerial); // this is slave @1 and RS-232 or USB-FTDI
 
 void setup() {
-  Serial.begin(9600); // baud-rate at 19200
+  // input pin
+  pinMode(SWITCH_PIN, OUTPUT);
+  
+  // for debug
+  Serial.begin(9600);
+  
+  // for send data
   mySerial.begin(9600);
+  
   slave.start();
 }
 
 void loop() {
-  slave.poll( au16data, 16 );
+  slave.poll(au16data, 16);
+  
+  // check data from master
+    // If the master device sets the first element in the array to 0, turn off the LED.
+  // Any other number will make the LED go high.
+  if (au16data[1] == 0) {
+    digitalWrite(LED_PIN, LOW);
+  } else {
+    digitalWrite(LED_PIN, HIGH);
+  }
+ 
+  // Set the second element in the array to the state of the switch
+  au16data[2] = digitalRead(SWITCH_PIN);
 }
